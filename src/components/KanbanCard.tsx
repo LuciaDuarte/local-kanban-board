@@ -20,7 +20,9 @@ export function KanbanCard({ card, onClick, now }: Props) {
       onKeyDown={(e) => e.key === 'Enter' && onClick()}
       className="group w-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-2.5 text-left cursor-pointer hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-sm transition-all"
     >
-      <p className="text-sm text-gray-900 dark:text-gray-100 leading-snug">{card.title}</p>
+      <p className="text-sm text-gray-900 dark:text-gray-100 leading-snug">
+        {card.title}
+      </p>
 
       {(card.dueDate || card.labelIds.length > 0) && (
         <div className="flex items-center gap-2 mt-2 flex-wrap">

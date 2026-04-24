@@ -75,7 +75,8 @@ export function CardModal({ cardId, onClose }: Props) {
 
   function handleTitleBlur() {
     const trimmed = title.trim()
-    if (trimmed && trimmed !== card.title) updateCard(cardId, { title: trimmed })
+    if (trimmed && trimmed !== card.title)
+      updateCard(cardId, { title: trimmed })
     else setTitle(card.title)
   }
 
@@ -121,6 +122,7 @@ export function CardModal({ cardId, onClose }: Props) {
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleTitleBlur}
             rows={2}
+            maxLength={100}
             className="flex-1 text-base font-semibold text-gray-900 dark:text-gray-100 bg-transparent outline-none resize-none leading-snug"
             aria-label="Card title"
           />
@@ -129,7 +131,13 @@ export function CardModal({ cardId, onClose }: Props) {
             aria-label="Close"
             className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0"
           >
-            <svg className="w-4 h-4" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              className="w-4 h-4"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M3 3l10 10M13 3L3 13" strokeLinecap="round" />
             </svg>
           </button>
@@ -147,6 +155,7 @@ export function CardModal({ cardId, onClose }: Props) {
               onBlur={handleDescriptionBlur}
               placeholder="Add a description…"
               rows={4}
+              maxLength={200}
               className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 outline-none focus:border-blue-500 resize-none transition-colors"
               aria-label="Card description"
             />
@@ -200,7 +209,9 @@ export function CardModal({ cardId, onClose }: Props) {
                         : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300'
                     }`}
                   >
-                    <span className={`w-2 h-2 rounded-full ${isActive ? 'bg-white/60' : label.bg}`} />
+                    <span
+                      className={`w-2 h-2 rounded-full ${isActive ? 'bg-white/60' : label.bg}`}
+                    />
                     {label.name}
                   </button>
                 )
@@ -212,7 +223,12 @@ export function CardModal({ cardId, onClose }: Props) {
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
           <p className="text-xs text-gray-400 dark:text-gray-500">
-            Created {new Date(card.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+            Created{' '}
+            {new Date(card.createdAt).toLocaleDateString(undefined, {
+              month: 'short',
+              day: 'numeric',
+              year: 'numeric',
+            })}
           </p>
           <button
             onClick={handleDelete}

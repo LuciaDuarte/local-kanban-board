@@ -30,8 +30,15 @@ type Props = {
  * Columns are horizontally sortable. Cards are sortable within and across columns.
  */
 export function BoardView({ boardId, onCardClick }: Props) {
-  const { boards, cards, columns, createColumn, reorderColumns, moveCard, reorderCards } =
-    useKanbanStore()
+  const {
+    boards,
+    cards,
+    columns,
+    createColumn,
+    reorderColumns,
+    moveCard,
+    reorderCards,
+  } = useKanbanStore()
   const board = boards[boardId]
 
   const [isAddingColumn, setIsAddingColumn] = useState(false)
@@ -49,7 +56,9 @@ export function BoardView({ boardId, onCardClick }: Props) {
   if (!board) return null
 
   // Collect all card IDs across all columns for collision detection
-  const allCardIds = board.columnIds.flatMap((cid) => columns[cid]?.cardIds ?? [])
+  const allCardIds = board.columnIds.flatMap(
+    (cid) => columns[cid]?.cardIds ?? []
+  )
 
   function handleDragStart(event: DragStartEvent) {
     const id = String(event.active.id)
@@ -78,7 +87,8 @@ export function BoardView({ boardId, onCardClick }: Props) {
     // Determine target column: either the column directly, or the column of the card hovered over
     const targetColumnId = board.columnIds.includes(overId)
       ? overId
-      : (Object.values(columns).find((col) => col.cardIds.includes(overId))?.id ?? null)
+      : (Object.values(columns).find((col) => col.cardIds.includes(overId))
+          ?.id ?? null)
 
     if (!targetColumnId || activeColumnId === targetColumnId) return
 
@@ -99,7 +109,10 @@ export function BoardView({ boardId, onCardClick }: Props) {
     const overId = String(over.id)
 
     // Column reorder
-    if (board.columnIds.includes(activeId) && board.columnIds.includes(overId)) {
+    if (
+      board.columnIds.includes(activeId) &&
+      board.columnIds.includes(overId)
+    ) {
       const oldIndex = board.columnIds.indexOf(activeId)
       const newIndex = board.columnIds.indexOf(overId)
       reorderColumns(boardId, arrayMove(board.columnIds, oldIndex, newIndex))
@@ -107,7 +120,9 @@ export function BoardView({ boardId, onCardClick }: Props) {
     }
 
     // Card reorder within same column
-    const activeCol = Object.values(columns).find((col) => col.cardIds.includes(activeId))
+    const activeCol = Object.values(columns).find((col) =>
+      col.cardIds.includes(activeId)
+    )
     const overCol = Object.values(columns).find(
       (col) => col.cardIds.includes(overId) || col.id === overId
     )
@@ -117,7 +132,9 @@ export function BoardView({ boardId, onCardClick }: Props) {
     if (activeCol.id === overCol.id) {
       const cardIds = activeCol.cardIds
       const oldIndex = cardIds.indexOf(activeId)
-      const newIndex = cardIds.includes(overId) ? cardIds.indexOf(overId) : cardIds.length
+      const newIndex = cardIds.includes(overId)
+        ? cardIds.indexOf(overId)
+        : cardIds.length
       if (oldIndex !== newIndex) {
         reorderCards(activeCol.id, arrayMove(cardIds, oldIndex, newIndex))
       }
@@ -151,9 +168,12 @@ export function BoardView({ boardId, onCardClick }: Props) {
     <div className="flex flex-col h-full">
       {/* Board header */}
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800 shrink-0">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{board.title}</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {board.title}
+        </h2>
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
-          {board.columnIds.length} column{board.columnIds.length !== 1 ? 's' : ''}
+          {board.columnIds.length} column
+          {board.columnIds.length !== 1 ? 's' : ''}
         </p>
       </div>
 
@@ -167,7 +187,10 @@ export function BoardView({ boardId, onCardClick }: Props) {
       >
         <div className="flex-1 overflow-x-auto">
           <div className="flex gap-4 p-6 h-full items-start">
-            <SortableContext items={board.columnIds} strategy={horizontalListSortingStrategy}>
+            <SortableContext
+              items={board.columnIds}
+              strategy={horizontalListSortingStrategy}
+            >
               {board.columnIds.length === 0 ? (
                 <div className="flex items-center justify-center w-full h-48 text-gray-400 dark:text-gray-600 text-sm">
                   No columns yet. Add one to get started.

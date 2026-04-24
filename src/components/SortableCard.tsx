@@ -24,10 +24,16 @@ type Props = {
  * A draggable card within a SortableContext.
  * Handles drag handle, due date badge, and label dots.
  */
-export function SortableCard({ card, onClick, isDragging = false, now }: Props) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: card.id,
-  })
+export function SortableCard({
+  card,
+  onClick,
+  isDragging = false,
+  now,
+}: Props) {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id: card.id,
+    })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -47,7 +53,9 @@ export function SortableCard({ card, onClick, isDragging = false, now }: Props) 
         onKeyDown={(e) => e.key === 'Enter' && onClick()}
         className="group w-full bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-2.5 text-left cursor-grab active:cursor-grabbing hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-sm transition-all"
       >
-        <p className="text-sm text-gray-900 dark:text-gray-100 leading-snug">{card.title}</p>
+        <p className="text-sm text-gray-900 dark:text-gray-100 leading-snug">
+          {card.title}
+        </p>
 
         {(card.dueDate || card.labelIds.length > 0) && (
           <div className="flex items-center gap-2 mt-2 flex-wrap">

@@ -21,5 +21,8 @@ export function getDueDateStatus(
  * Formats a date string for display on a card badge.
  */
 export function formatDueDate(dueDate: string): string {
-  return new Date(dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+  return new Date(dueDate).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+  })
 }

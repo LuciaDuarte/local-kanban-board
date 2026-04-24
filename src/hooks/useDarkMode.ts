@@ -7,7 +7,9 @@ const STORAGE_KEY = 'kanban-theme'
 function getInitialTheme(): Theme {
   const stored = localStorage.getItem(STORAGE_KEY)
   if (stored === 'light' || stored === 'dark') return stored
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light'
 }
 
 function applyTheme(theme: Theme) {
@@ -30,7 +32,8 @@ export function useDarkMode() {
     localStorage.setItem(STORAGE_KEY, theme)
   }, [theme])
 
-  const toggle = () => setTheme((theme) => (theme === 'dark' ? 'light' : 'dark'))
+  const toggle = () =>
+    setTheme((theme) => (theme === 'dark' ? 'light' : 'dark'))
 
   return { theme, toggle, isDark: theme === 'dark' }
 }

@@ -70,7 +70,9 @@ export const useKanbanStore = create<KanbanState>()(
 
           const nextBoardIds = state.boardIds.filter((id) => id !== boardId)
           const nextActiveId =
-            state.activeBoardId === boardId ? (nextBoardIds[0] ?? null) : state.activeBoardId
+            state.activeBoardId === boardId
+              ? (nextBoardIds[0] ?? null)
+              : state.activeBoardId
 
           return {
             boardIds: nextBoardIds,
@@ -131,7 +133,9 @@ export const useKanbanStore = create<KanbanState>()(
               ...state.boards,
               [boardId]: {
                 ...state.boards[boardId],
-                columnIds: state.boards[boardId].columnIds.filter((id) => id !== columnId),
+                columnIds: state.boards[boardId].columnIds.filter(
+                  (id) => id !== columnId
+                ),
               },
             },
           }
@@ -192,7 +196,9 @@ export const useKanbanStore = create<KanbanState>()(
               ...state.columns,
               [columnId]: {
                 ...state.columns[columnId],
-                cardIds: state.columns[columnId].cardIds.filter((id) => id !== cardId),
+                cardIds: state.columns[columnId].cardIds.filter(
+                  (id) => id !== cardId
+                ),
               },
             },
           }
@@ -204,7 +210,9 @@ export const useKanbanStore = create<KanbanState>()(
        */
       moveCard: (cardId, fromColumnId, toColumnId, toIndex) =>
         set((state) => {
-          const fromCardIds = state.columns[fromColumnId].cardIds.filter((id) => id !== cardId)
+          const fromCardIds = state.columns[fromColumnId].cardIds.filter(
+            (id) => id !== cardId
+          )
           const toCardIds = [...state.columns[toColumnId].cardIds]
 
           // If moving within the same column, fromCardIds already has the card removed
@@ -220,8 +228,14 @@ export const useKanbanStore = create<KanbanState>()(
           return {
             columns: {
               ...state.columns,
-              [fromColumnId]: { ...state.columns[fromColumnId], cardIds: fromCardIds },
-              [toColumnId]: { ...state.columns[toColumnId], cardIds: toCardIds },
+              [fromColumnId]: {
+                ...state.columns[fromColumnId],
+                cardIds: fromCardIds,
+              },
+              [toColumnId]: {
+                ...state.columns[toColumnId],
+                cardIds: toCardIds,
+              },
             },
           }
         }),

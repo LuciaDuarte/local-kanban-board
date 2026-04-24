@@ -1,5 +1,9 @@
 import { useState, useMemo } from 'react'
-import { useSortable, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
+import {
+  useSortable,
+  SortableContext,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useKanbanStore } from '../store/kanban'
 import { SortableCard } from './SortableCard'
@@ -16,15 +20,22 @@ type Props = {
  * A sortable column that wraps card list in its own SortableContext.
  * Handles column rename/delete and card creation inline.
  */
-export function SortableColumn({ columnId, boardId, onCardClick, isDraggingColumn }: Props) {
-  const { columns, cards, renameColumn, deleteColumn, createCard } = useKanbanStore()
+export function SortableColumn({
+  columnId,
+  boardId,
+  onCardClick,
+  isDraggingColumn,
+}: Props) {
+  const { columns, cards, renameColumn, deleteColumn, createCard } =
+    useKanbanStore()
   const column = columns[columnId]
   const [isAddingCard, setIsAddingCard] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
   // eslint-disable-next-line react-hooks/purity -- Date.now() is used for stable display, not reactive state
   const now = useMemo(() => Date.now(), [])
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
     id: columnId,
   })
 
@@ -96,7 +107,10 @@ export function SortableColumn({ columnId, boardId, onCardClick, isDraggingColum
 
       {/* Card list */}
       <div className="flex-1 overflow-y-auto px-2 space-y-2 pb-2 min-h-[40px]">
-        <SortableContext items={column.cardIds} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={column.cardIds}
+          strategy={verticalListSortingStrategy}
+        >
           {column.cardIds.map((cardId) => {
             const card = cards[cardId]
             if (!card) return null

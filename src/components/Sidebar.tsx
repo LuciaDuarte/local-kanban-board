@@ -5,8 +5,15 @@ import { useDarkMode } from '../hooks/useDarkMode'
 
 /** The fixed left sidebar listing all boards with create/rename/delete controls. */
 export function Sidebar() {
-  const { boardIds, boards, activeBoardId, createBoard, renameBoard, deleteBoard, setActiveBoard } =
-    useKanbanStore()
+  const {
+    boardIds,
+    boards,
+    activeBoardId,
+    createBoard,
+    renameBoard,
+    deleteBoard,
+    setActiveBoard,
+  } = useKanbanStore()
   const { isDark, toggle } = useDarkMode()
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [isCreating, setIsCreating] = useState(false)
@@ -74,7 +81,10 @@ export function Sidebar() {
                   stroke="currentColor"
                   strokeWidth="2"
                 >
-                  <path d="M2 4h12M6 4V2h4v2M5 4l1 10h4l1-10" strokeLinecap="round" />
+                  <path
+                    d="M2 4h12M6 4V2h4v2M5 4l1 10h4l1-10"
+                    strokeLinecap="round"
+                  />
                 </svg>
               </button>
             </div>

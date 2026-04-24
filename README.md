@@ -13,14 +13,14 @@ A minimal, fast kanban board that runs entirely in the browser. No account, no b
 
 ## Tech stack
 
-| Layer | Choice |
-|---|---|
-| Framework | React 19 + TypeScript 6 |
-| Build | Vite 8 |
-| Styling | Tailwind CSS 4 |
-| State | Zustand 5 (localStorage persist) |
+| Layer         | Choice                            |
+| ------------- | --------------------------------- |
+| Framework     | React 19 + TypeScript 6           |
+| Build         | Vite 8                            |
+| Styling       | Tailwind CSS 4                    |
+| State         | Zustand 5 (localStorage persist)  |
 | Drag and drop | @dnd-kit/core + @dnd-kit/sortable |
-| Testing | Vitest + React Testing Library |
+| Testing       | Vitest + React Testing Library    |
 
 ## Getting started
 

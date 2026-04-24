@@ -18,14 +18,19 @@ function App() {
           <div className="flex items-center justify-center h-full text-gray-400 dark:text-gray-600 select-none">
             <div className="text-center space-y-2">
               <p className="text-2xl font-light">No board selected</p>
-              <p className="text-sm">Create a board in the sidebar to get started.</p>
+              <p className="text-sm">
+                Create a board in the sidebar to get started.
+              </p>
             </div>
           </div>
         )}
       </main>
 
       {activeCardId && (
-        <CardModal cardId={activeCardId} onClose={() => setActiveCardId(null)} />
+        <CardModal
+          cardId={activeCardId}
+          onClose={() => setActiveCardId(null)}
+        />
       )}
     </div>
   )

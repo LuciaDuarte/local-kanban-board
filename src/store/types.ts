@@ -55,8 +55,16 @@ export type KanbanState = {
 
   // Card actions
   createCard: (columnId: string, title: string) => void
-  updateCard: (cardId: string, patch: Partial<Omit<Card, 'id' | 'createdAt'>>) => void
+  updateCard: (
+    cardId: string,
+    patch: Partial<Omit<Card, 'id' | 'createdAt'>>
+  ) => void
   deleteCard: (columnId: string, cardId: string) => void
-  moveCard: (cardId: string, fromColumnId: string, toColumnId: string, toIndex: number) => void
+  moveCard: (
+    cardId: string,
+    fromColumnId: string,
+    toColumnId: string,
+    toIndex: number
+  ) => void
   reorderCards: (columnId: string, cardIds: string[]) => void
 }
