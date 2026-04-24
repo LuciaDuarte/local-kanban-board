@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+/* Tell Tailwind v4 to use class-based dark mode instead of prefers-color-scheme */
+@variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+  }
+
+  html {
+    font-family: ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    @apply bg-white text-gray-900;
+  }
+
+  html.dark body {
+    @apply bg-gray-950 text-gray-100;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Smooth scrollbar in column card lists */
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+  }
+}
