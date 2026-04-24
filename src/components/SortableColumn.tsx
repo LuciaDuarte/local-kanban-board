@@ -36,8 +36,8 @@ export function SortableColumn({
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
-    id: columnId,
-  })
+      id: columnId,
+    })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -78,6 +78,7 @@ export function SortableColumn({
           <InlineEdit
             value={column.title}
             onCommit={(title) => renameColumn(columnId, title)}
+            maxLength={100}
             className="text-sm font-semibold text-gray-700 dark:text-gray-300"
           />
           <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">

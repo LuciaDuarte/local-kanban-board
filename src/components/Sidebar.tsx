@@ -62,6 +62,7 @@ export function Sidebar() {
               <span className="flex-1 truncate text-sm">
                 <InlineEdit
                   value={board.title}
+                  maxLength={100}
                   onCommit={(title) => renameBoard(id, title)}
                   className="text-sm font-medium"
                 />

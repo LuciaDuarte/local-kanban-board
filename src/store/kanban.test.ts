@@ -33,7 +33,8 @@ describe('Board actions', () => {
   })
 
   it('deletes a board and cascades to columns and cards', () => {
-    const { createBoard, createColumn, createCard, deleteBoard } = useKanbanStore.getState()
+    const { createBoard, createColumn, createCard, deleteBoard } =
+      useKanbanStore.getState()
     createBoard('Board')
     const boardId = useKanbanStore.getState().boardIds[0]
     createColumn(boardId, 'Col')
@@ -108,7 +109,10 @@ describe('Column actions', () => {
     useKanbanStore.getState().createColumn(boardId, 'B')
     const [idA, idB] = useKanbanStore.getState().boards[boardId].columnIds
     useKanbanStore.getState().reorderColumns(boardId, [idB, idA])
-    expect(useKanbanStore.getState().boards[boardId].columnIds).toEqual([idB, idA])
+    expect(useKanbanStore.getState().boards[boardId].columnIds).toEqual([
+      idB,
+      idA,
+    ])
   })
 })
 
@@ -137,7 +141,9 @@ describe('Card actions', () => {
     const { colId } = setup()
     useKanbanStore.getState().createCard(colId, 'Card')
     const cardId = useKanbanStore.getState().columns[colId].cardIds[0]
-    useKanbanStore.getState().updateCard(cardId, { description: 'Details', dueDate: '2026-01-01' })
+    useKanbanStore
+      .getState()
+      .updateCard(cardId, { description: 'Details', dueDate: '2026-01-01' })
     const card = useKanbanStore.getState().cards[cardId]
     expect(card.description).toBe('Details')
     expect(card.dueDate).toBe('2026-01-01')

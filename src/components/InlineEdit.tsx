@@ -5,13 +5,20 @@ type Props = {
   onCommit: (value: string) => void
   className?: string
   placeholder?: string
+  maxLength?: number
 }
 
 /**
  * An inline text input that shows as plain text until clicked.
  * Commits on Enter or blur, cancels on Escape.
  */
-export function InlineEdit({ value, onCommit, className = '', placeholder }: Props) {
+export function InlineEdit({
+  value,
+  onCommit,
+  className = '',
+  placeholder,
+  maxLength,
+}: Props) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(value)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -46,6 +53,7 @@ export function InlineEdit({ value, onCommit, className = '', placeholder }: Pro
         onBlur={handleBlur}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
+        maxLength={maxLength}
         className={`bg-transparent outline-none border-b border-blue-500 w-full ${className}`}
       />
     )

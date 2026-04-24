@@ -251,6 +251,27 @@ export const useKanbanStore = create<KanbanState>()(
     }),
     {
       name: 'kanban-v1',
+      /**
+       * Validate hydrated state before merging. If the persisted value is missing
+       * required top-level keys (e.g. corrupted or from an incompatible schema),
+       * discard it and start fresh rather than crashing at runtime.
+       */
+      merge: (persisted, current) => {
+        if (
+          persisted === null ||
+          typeof persisted !== 'object' ||
+          !Array.isArray((persisted as Record<string, unknown>).boardIds) ||
+          typeof (persisted as Record<string, unknown>).boards !== 'object' ||
+          typeof (persisted as Record<string, unknown>).columns !== 'object' ||
+          typeof (persisted as Record<string, unknown>).cards !== 'object'
+        ) {
+          console.warn(
+            '[kanban] Persisted state failed validation — resetting to defaults.'
+          )
+          return current
+        }
+        return { ...current, ...(persisted as Partial<KanbanState>) }
+      },
     }
   )
 )
