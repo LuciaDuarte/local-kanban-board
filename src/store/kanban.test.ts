@@ -8,7 +8,6 @@ function resetStore() {
     boards: {},
     columns: {},
     cards: {},
-    labels: {},
     activeBoardId: null,
   })
 }
@@ -166,6 +165,19 @@ describe('Card actions', () => {
     const [idA, idB] = useKanbanStore.getState().columns[colId].cardIds
     useKanbanStore.getState().moveCard(idA, colId, colId, 1)
     expect(useKanbanStore.getState().columns[colId].cardIds).toEqual([idB, idA])
+  })
+
+  it('moves a card within a 3-card column without duplicating it', () => {
+    const { colId } = setup()
+    useKanbanStore.getState().createCard(colId, 'A')
+    useKanbanStore.getState().createCard(colId, 'B')
+    useKanbanStore.getState().createCard(colId, 'C')
+    const [idA, idB, idC] = useKanbanStore.getState().columns[colId].cardIds
+    // Move A (index 0) to index 2
+    useKanbanStore.getState().moveCard(idA, colId, colId, 2)
+    const result = useKanbanStore.getState().columns[colId].cardIds
+    expect(result).toHaveLength(3)
+    expect(result).toEqual([idB, idC, idA])
   })
 
   it('moves a card between columns', () => {

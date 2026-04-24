@@ -17,6 +17,7 @@ export function Sidebar() {
   const { isDark, toggle } = useDarkMode()
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [isCreating, setIsCreating] = useState(false)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   function handleCreate() {
     const title = newBoardTitle.trim()
@@ -49,45 +50,74 @@ export function Sidebar() {
         {boardIds.map((id) => {
           const board = boards[id]
           const isActive = id === activeBoardId
+          const isPendingDelete = confirmDeleteId === id
           return (
-            <div
-              key={id}
-              className={`group flex items-center gap-1 rounded-md px-2 py-1.5 cursor-pointer transition-colors ${
-                isActive
-                  ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
-                  : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
-              }`}
-              onClick={() => setActiveBoard(id)}
-            >
-              <span className="flex-1 truncate text-sm">
-                <InlineEdit
-                  value={board.title}
-                  maxLength={100}
-                  onCommit={(title) => renameBoard(id, title)}
-                  className="text-sm font-medium"
-                />
-              </span>
-              <button
-                aria-label={`Delete board ${board.title}`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  deleteBoard(id)
-                }}
-                className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900 text-red-500 transition-opacity"
-              >
-                <svg
-                  className="w-3.5 h-3.5"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+            <div key={id} className="group flex flex-col gap-0.5">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setActiveBoard(id)}
+                  className={`flex-1 flex items-center gap-1 rounded-md px-2 py-1.5 text-left transition-colors ${
+                    isActive
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100'
+                      : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                  }`}
                 >
-                  <path
-                    d="M2 4h12M6 4V2h4v2M5 4l1 10h4l1-10"
-                    strokeLinecap="round"
-                  />
-                </svg>
-              </button>
+                  <span className="flex-1 truncate text-sm">
+                    <InlineEdit
+                      value={board.title}
+                      onCommit={(title) => renameBoard(id, title)}
+                      className="text-sm font-medium"
+                      maxLength={100}
+                    />
+                  </span>
+                </button>
+                <button
+                  aria-label={`Delete board ${board.title}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setConfirmDeleteId(id)
+                  }}
+                  className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-red-100 dark:hover:bg-red-900 text-red-500 transition-opacity"
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      d="M2 4h12M6 4V2h4v2M5 4l1 10h4l1-10"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+              {isPendingDelete && (
+                <div className="flex items-center gap-1.5 px-2 pb-1">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    Delete board?
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      deleteBoard(id)
+                      setConfirmDeleteId(null)
+                    }}
+                    className="text-xs text-white bg-red-500 hover:bg-red-600 px-2 py-0.5 rounded transition-colors"
+                  >
+                    Yes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setConfirmDeleteId(null)}
+                    className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 px-1 py-0.5 rounded transition-colors"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
             </div>
           )
         })}

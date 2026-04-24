@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import {
   useSortable,
   SortableContext,
@@ -14,6 +14,7 @@ type Props = {
   boardId: string
   onCardClick: (cardId: string) => void
   isDraggingColumn: boolean
+  now: number
 }
 
 /**
@@ -25,14 +26,13 @@ export function SortableColumn({
   boardId,
   onCardClick,
   isDraggingColumn,
+  now,
 }: Props) {
   const { columns, cards, renameColumn, deleteColumn, createCard } =
     useKanbanStore()
   const column = columns[columnId]
   const [isAddingCard, setIsAddingCard] = useState(false)
   const [newCardTitle, setNewCardTitle] = useState('')
-  // eslint-disable-next-line react-hooks/purity -- Date.now() is used for stable display, not reactive state
-  const now = useMemo(() => Date.now(), [])
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -78,8 +78,8 @@ export function SortableColumn({
           <InlineEdit
             value={column.title}
             onCommit={(title) => renameColumn(columnId, title)}
-            maxLength={100}
             className="text-sm font-semibold text-gray-700 dark:text-gray-300"
+            maxLength={100}
           />
           <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0">
             {column.cardIds.length}

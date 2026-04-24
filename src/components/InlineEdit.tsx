@@ -60,14 +60,14 @@ export function InlineEdit({
   }
 
   return (
-    <span
-      role="button"
+    <button
+      type="button"
       tabIndex={0}
       onClick={() => setEditing(true)}
       onKeyDown={(e) => e.key === 'Enter' && setEditing(true)}
-      className={`cursor-text ${className}`}
+      className={`cursor-text text-left bg-transparent border-none p-0 ${className}`}
     >
       {value || <span className="opacity-40">{placeholder}</span>}
-    </span>
+    </button>
   )
 }
