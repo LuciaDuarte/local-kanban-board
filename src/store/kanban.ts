@@ -17,7 +17,6 @@ export const useKanbanStore = create<KanbanState>()(
       boards: {},
       columns: {},
       cards: {},
-      labels: {},
       activeBoardId: null,
 
       // --- Board actions ---

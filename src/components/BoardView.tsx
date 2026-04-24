@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import {
   DndContext,
   DragOverlay,
@@ -23,13 +23,14 @@ import { KanbanCard } from './KanbanCard'
 type Props = {
   boardId: string
   onCardClick: (cardId: string) => void
+  now: number
 }
 
 /**
  * Renders the full board with drag-and-drop support.
  * Columns are horizontally sortable. Cards are sortable within and across columns.
  */
-export function BoardView({ boardId, onCardClick }: Props) {
+export function BoardView({ boardId, onCardClick, now }: Props) {
   const {
     boards,
     cards,
@@ -45,8 +46,6 @@ export function BoardView({ boardId, onCardClick }: Props) {
   const [newColumnTitle, setNewColumnTitle] = useState('')
   const [activeCardId, setActiveCardId] = useState<string | null>(null)
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null)
-  // eslint-disable-next-line react-hooks/purity -- Date.now() is used for stable display, not reactive state
-  const now = useMemo(() => Date.now(), [])
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -203,6 +202,7 @@ export function BoardView({ boardId, onCardClick }: Props) {
                     boardId={boardId}
                     onCardClick={onCardClick}
                     isDraggingColumn={activeColumnId === colId}
+                    now={now}
                   />
                 ))
               )}

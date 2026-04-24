@@ -1,19 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useKanbanStore } from '../store/kanban'
+import { LABEL_COLORS } from '../constants/labels'
 
 type Props = {
   cardId: string
   onClose: () => void
 }
-
-const LABEL_COLORS = [
-  { name: 'Red', value: 'red', bg: 'bg-red-500' },
-  { name: 'Orange', value: 'orange', bg: 'bg-orange-500' },
-  { name: 'Yellow', value: 'yellow', bg: 'bg-yellow-400' },
-  { name: 'Green', value: 'green', bg: 'bg-green-500' },
-  { name: 'Blue', value: 'blue', bg: 'bg-blue-500' },
-  { name: 'Purple', value: 'purple', bg: 'bg-purple-500' },
-]
 
 /**
  * Modal dialog for viewing and editing a card's full details:

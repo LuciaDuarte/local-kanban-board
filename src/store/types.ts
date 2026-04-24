@@ -1,10 +1,3 @@
-/** A color label that can be attached to a card. */
-export type Label = {
-  id: string
-  name: string
-  color: string
-}
-
 /** A single kanban card. */
 export type Card = {
   id: string
@@ -37,7 +30,6 @@ export type KanbanState = {
   boards: Record<string, Board>
   columns: Record<string, Column>
   cards: Record<string, Card>
-  labels: Record<string, Label>
   /** The currently active board ID, or null if none selected. */
   activeBoardId: string | null
 
