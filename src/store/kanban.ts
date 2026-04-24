@@ -40,12 +40,15 @@ export const useKanbanStore = create<KanbanState>()(
 
       /** Renames an existing board. */
       renameBoard: (boardId, title) =>
-        set((state) => ({
-          boards: {
-            ...state.boards,
-            [boardId]: { ...state.boards[boardId], title },
-          },
-        })),
+        set((state) => {
+          if (!state.boards[boardId]) return state
+          return {
+            boards: {
+              ...state.boards,
+              [boardId]: { ...state.boards[boardId], title },
+            },
+          }
+        }),
 
       /** Deletes a board and all its columns and cards. */
       deleteBoard: (boardId) =>
@@ -106,12 +109,15 @@ export const useKanbanStore = create<KanbanState>()(
 
       /** Renames a column. */
       renameColumn: (columnId, title) =>
-        set((state) => ({
-          columns: {
-            ...state.columns,
-            [columnId]: { ...state.columns[columnId], title },
-          },
-        })),
+        set((state) => {
+          if (!state.columns[columnId]) return state
+          return {
+            columns: {
+              ...state.columns,
+              [columnId]: { ...state.columns[columnId], title },
+            },
+          }
+        }),
 
       /** Deletes a column and all its cards from the board. */
       deleteColumn: (boardId, columnId) =>
@@ -177,12 +183,15 @@ export const useKanbanStore = create<KanbanState>()(
 
       /** Updates fields on a card. */
       updateCard: (cardId, patch) =>
-        set((state) => ({
-          cards: {
-            ...state.cards,
-            [cardId]: { ...state.cards[cardId], ...patch },
-          },
-        })),
+        set((state) => {
+          if (!state.cards[cardId]) return state
+          return {
+            cards: {
+              ...state.cards,
+              [cardId]: { ...state.cards[cardId], ...patch },
+            },
+          }
+        }),
 
       /** Deletes a card from a column. */
       deleteCard: (columnId, cardId) =>
@@ -209,19 +218,25 @@ export const useKanbanStore = create<KanbanState>()(
        */
       moveCard: (cardId, fromColumnId, toColumnId, toIndex) =>
         set((state) => {
+          if (fromColumnId === toColumnId) {
+            // Same-column reorder: remove from current position, insert at target index
+            const cardIds = state.columns[fromColumnId].cardIds.filter(
+              (id) => id !== cardId
+            )
+            cardIds.splice(toIndex, 0, cardId)
+            return {
+              columns: {
+                ...state.columns,
+                [fromColumnId]: { ...state.columns[fromColumnId], cardIds },
+              },
+            }
+          }
+
+          // Cross-column move
           const fromCardIds = state.columns[fromColumnId].cardIds.filter(
             (id) => id !== cardId
           )
           const toCardIds = [...state.columns[toColumnId].cardIds]
-
-          // If moving within the same column, fromCardIds already has the card removed
-          if (fromColumnId === toColumnId) {
-            toCardIds.splice(
-              toCardIds.findIndex((id) => id === cardId),
-              1
-            )
-          }
-
           toCardIds.splice(toIndex, 0, cardId)
 
           return {

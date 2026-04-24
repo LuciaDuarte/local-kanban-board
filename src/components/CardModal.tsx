@@ -16,9 +16,11 @@ export function CardModal({ cardId, onClose }: Props) {
   const { cards, updateCard, deleteCard, columns } = useKanbanStore()
   const card = cards[cardId]
   const dialogRef = useRef<HTMLDivElement>(null)
+  const titleId = `card-modal-title-${cardId}`
   const [title, setTitle] = useState(card?.title ?? '')
   const [description, setDescription] = useState(card?.description ?? '')
   const [dueDate, setDueDate] = useState(card?.dueDate ?? '')
+  const [confirmDelete, setConfirmDelete] = useState(false)
 
   // Find which column owns this card (for delete)
   const owningColumnId = Object.values(columns).find((col) =>
@@ -98,18 +100,19 @@ export function CardModal({ cardId, onClose }: Props) {
     <div
       className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
       onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Card details"
     >
       <div
         ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
         className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4 border-b border-gray-100 dark:border-gray-800">
           <textarea
+            id={titleId}
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleTitleBlur}
@@ -147,7 +150,7 @@ export function CardModal({ cardId, onClose }: Props) {
               onBlur={handleDescriptionBlur}
               placeholder="Add a description…"
               rows={4}
-              maxLength={200}
+              maxLength={2000}
               className="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 outline-none focus:border-blue-500 resize-none transition-colors"
               aria-label="Card description"
             />
@@ -222,12 +225,32 @@ export function CardModal({ cardId, onClose }: Props) {
               year: 'numeric',
             })}
           </p>
-          <button
-            onClick={handleDelete}
-            className="text-xs text-red-500 hover:text-red-600 dark:hover:text-red-400 px-3 py-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-          >
-            Delete card
-          </button>
+          {confirmDelete ? (
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                Delete this card?
+              </span>
+              <button
+                onClick={handleDelete}
+                className="text-xs text-white bg-red-500 hover:bg-red-600 px-2.5 py-1 rounded-md transition-colors"
+              >
+                Yes, delete
+              </button>
+              <button
+                onClick={() => setConfirmDelete(false)}
+                className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 px-2 py-1 rounded-md transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setConfirmDelete(true)}
+              className="text-xs text-red-500 hover:text-red-600 dark:hover:text-red-400 px-3 py-1.5 rounded-md hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            >
+              Delete card
+            </button>
+          )}
         </div>
       </div>
     </div>
