@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen } from '@testing-library/react'
 import { CardContent } from './CardContent'
 import type { Card } from '../store/types'
@@ -14,6 +14,29 @@ function makeCard(overrides: Partial<Card> = {}): Card {
     ...overrides,
   }
 }
+
+// jsdom's locale can produce "M/D" instead of "Mon D"; force English short format.
+const originalToLocaleDateString = Date.prototype.toLocaleDateString
+beforeEach(() => {
+  vi.spyOn(Date.prototype, 'toLocaleDateString').mockImplementation(function (
+    this: Date,
+    _locales?: unknown,
+    options?: Intl.DateTimeFormatOptions
+  ) {
+    if (options?.month === 'short' && options?.day === 'numeric') {
+      const months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      ]
+      return `${months[this.getMonth()]} ${this.getDate()}`
+    }
+    return originalToLocaleDateString.call(this, 'en-US', options)
+  })
+})
+
+afterEach(() => {
+  vi.restoreAllMocks()
+})
 
 describe('CardContent', () => {
   it('renders the card title', () => {
