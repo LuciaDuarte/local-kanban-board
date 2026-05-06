@@ -8,7 +8,7 @@ import { generateId } from '../utils/id'
  * Persisted to localStorage under the key 'kanban-v1'.
  *
  * Schema versioning note: if the shape of KanbanState changes in a breaking way,
- * increment the storage key (e.g. 'kanban-v2') and add a migration. See ADR 003.
+ * increment the storage key (e.g. 'kanban-v2') and add a migration. See ADR 001.
  */
 export const useKanbanStore = create<KanbanState>()(
   persist(

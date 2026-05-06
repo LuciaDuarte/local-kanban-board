@@ -46,14 +46,17 @@ npm run format        # Format with Prettier
 
 ```
 src/
+  App.tsx         Root layout
   components/     UI components
-    App.tsx         Root layout
     Sidebar.tsx     Board list sidebar
     BoardView.tsx   Board with DnD context
     SortableColumn.tsx  Draggable column
     SortableCard.tsx    Draggable card
     CardModal.tsx   Card detail modal
+    CardModal.test.tsx  CardModal tests
     KanbanCard.tsx  Card display (used in DragOverlay)
+    CardContent.tsx Card content display
+    CardContent.test.tsx CardContent tests
     InlineEdit.tsx  Click-to-edit text field
   store/
     kanban.ts       Zustand store + all actions
@@ -61,9 +64,14 @@ src/
     kanban.test.ts  Store unit tests
   hooks/
     useDarkMode.ts  Dark mode toggle hook
+    useNow.ts       Current timestamp hook
   utils/
     id.ts           ID generation utility
     id.test.ts      ID utility tests
+    date.ts         Date formatting utility
+    date.test.ts    Date utility tests
+  constants/
+    labels.ts       Label definitions
   test/
     setup.ts        Vitest + RTL setup
 docs/
