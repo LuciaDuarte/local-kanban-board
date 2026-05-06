@@ -4,7 +4,7 @@ A minimal, fast kanban board that runs entirely in the browser. No account, no b
 
 ## Features
 
-- Multiple boards managed from a persistent sidebar
+- Multiple boards managed from a persistent sidebar (collapsible)
 - Columns with inline rename and delete
 - Cards with title, description, labels, and due date
 - Drag and drop: reorder cards within a column, move cards between columns, reorder columns

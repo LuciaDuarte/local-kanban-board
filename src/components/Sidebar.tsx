@@ -1,7 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useKanbanStore } from '../store/kanban'
 import { InlineEdit } from './InlineEdit'
 import { useDarkMode } from '../hooks/useDarkMode'
+
+const SIDEBAR_COLLAPSED_KEY = 'kanban-sidebar-collapsed'
+
+function getInitialCollapsed(): boolean {
+  const stored = localStorage.getItem(SIDEBAR_COLLAPSED_KEY)
+  return stored === 'true'
+}
 
 /** The fixed left sidebar listing all boards with create/rename/delete controls. */
 export function Sidebar() {
@@ -15,9 +22,14 @@ export function Sidebar() {
     setActiveBoard,
   } = useKanbanStore()
   const { isDark, toggle } = useDarkMode()
+  const [collapsed, setCollapsed] = useState(getInitialCollapsed)
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+
+  useEffect(() => {
+    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(collapsed))
+  }, [collapsed])
 
   function handleCreate() {
     const title = newBoardTitle.trim()
@@ -36,13 +48,54 @@ export function Sidebar() {
     }
   }
 
+  if (collapsed) {
+    return (
+      <aside className="flex flex-col w-12 min-h-screen bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shrink-0 items-center py-4">
+        <button
+          onClick={() => setCollapsed(false)}
+          aria-label="Expand sidebar"
+          className="p-1.5 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        >
+          <svg
+            className="w-5 h-5"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          </svg>
+        </button>
+      </aside>
+    )
+  }
+
   return (
     <aside className="flex flex-col w-60 min-h-screen bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shrink-0">
       {/* Header */}
-      <div className="px-4 pt-6 pb-4">
+      <div className="flex items-center justify-between px-4 pt-6 pb-4">
         <h1 className="text-base font-semibold tracking-tight text-gray-900 dark:text-gray-100">
           Kanban
         </h1>
+        <button
+          onClick={() => setCollapsed(true)}
+          aria-label="Collapse sidebar"
+          className="p-1 rounded-md text-gray-400 dark:text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+        >
+          <svg
+            className="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
+          </svg>
+        </button>
       </div>
 
       {/* Board list */}
