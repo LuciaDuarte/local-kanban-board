@@ -93,7 +93,7 @@ Dark mode is managed by `useDarkMode`, which toggles the `dark` class on `<html>
 
 ## Data persistence
 
-All state is stored in `localStorage` under the key `kanban-v1`. When new fields are added to the data model (e.g. `link`, `comments`, `history`), a `migrateCard` function in the Zustand `merge` config fills in safe defaults for any missing fields — this allows the storage key to stay the same without losing existing user data. If the stored state shape changes in a **breaking** way (fields renamed, nested structure changed beyond what `migrateCard` can handle), the key should be incremented to `kanban-v2` and a migration added. See [ADR 001](docs/adr/001-zustand-persist.md).
+All state is stored in `localStorage` under the key `kanban-v1`. A `schemaVersion` field tracks the data format version — when the persisted version is behind the current version, a `migrateCard` function in the Zustand `merge` config fills in safe defaults for any missing fields. When the schema is already current, migration is skipped entirely (O(1) instead of O(n)). If the stored state shape changes in a **breaking** way (fields renamed, nested structure changed beyond what `migrateCard` can handle), the key should be incremented to `kanban-v2` and a migration added. See [ADR 001](docs/adr/001-zustand-persist.md).
 
 ## Testing
 

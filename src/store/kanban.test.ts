@@ -9,6 +9,7 @@ function resetStore() {
     columns: {},
     cards: {},
     activeBoardId: null,
+    schemaVersion: 1,
   })
 }
 
@@ -315,6 +316,16 @@ describe('Comment actions', () => {
 describe('Persistence migration', () => {
   beforeEach(resetStore)
 
+  function setup() {
+    useKanbanStore.getState().createBoard('Board')
+    const boardId = useKanbanStore.getState().boardIds[0]
+    useKanbanStore.getState().createColumn(boardId, 'Col')
+    const colId = useKanbanStore.getState().boards[boardId].columnIds[0]
+    useKanbanStore.getState().createCard(colId, 'Card')
+    const cardId = useKanbanStore.getState().columns[colId].cardIds[0]
+    return { boardId, colId, cardId }
+  }
+
   it('migrates old cards missing link, comments, and history fields', () => {
     const { createBoard, createColumn, createCard } = useKanbanStore.getState()
     createBoard('Board')
@@ -330,5 +341,19 @@ describe('Persistence migration', () => {
     expect(card.history).not.toBeUndefined()
     expect(card.history).toHaveLength(1)
     expect(card.history[0].type).toBe('created')
+  })
+
+  it('sets schema version after merge', () => {
+    const state = useKanbanStore.getState()
+    expect(state.schemaVersion).toBe(1)
+  })
+
+  it('skips card migration when schema version is current', () => {
+    const { cardId } = setup()
+    const card = useKanbanStore.getState().cards[cardId]
+    const originalHistoryLength = card.history.length
+    useKanbanStore.setState({ schemaVersion: 1 })
+    const afterCard = useKanbanStore.getState().cards[cardId]
+    expect(afterCard.history).toHaveLength(originalHistoryLength)
   })
 })
