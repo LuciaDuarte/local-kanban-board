@@ -1,7 +1,25 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { KanbanState, Board, Column, Card } from './types'
+import type { KanbanState, Board, Column, Card, HistoryEvent } from './types'
 import { generateId } from '../utils/id'
+
+/**
+ * Migrates a persisted card (which may be missing fields added later)
+ * into a complete Card object with safe defaults.
+ */
+function migrateCard(card: Card & Record<string, unknown>): Card {
+  return {
+    id: card.id,
+    title: card.title ?? '',
+    description: card.description ?? '',
+    labelIds: Array.isArray(card.labelIds) ? card.labelIds : [],
+    dueDate: card.dueDate ?? null,
+    createdAt: card.createdAt ?? new Date().toISOString(),
+    link: card.link ?? null,
+    comments: Array.isArray(card.comments) ? card.comments : [],
+    history: Array.isArray(card.history) ? card.history : [],
+  }
+}
 
 /**
  * The main Zustand store for the kanban board.
@@ -157,17 +175,23 @@ export const useKanbanStore = create<KanbanState>()(
 
       // --- Card actions ---
 
-      /** Creates a new card at the end of a column. */
+      /** Creates a new card at the end of a column. Appends a 'created' history event. */
       createCard: (columnId, title) =>
         set((state) => {
           const id = generateId()
+          const now = new Date().toISOString()
           const card: Card = {
             id,
             title,
             description: '',
             labelIds: [],
             dueDate: null,
-            createdAt: new Date().toISOString(),
+            createdAt: now,
+            link: null,
+            comments: [],
+            history: [
+              { id: generateId(), type: 'created', columnId, timestamp: now },
+            ],
           }
           return {
             cards: { ...state.cards, [id]: card },
@@ -181,7 +205,7 @@ export const useKanbanStore = create<KanbanState>()(
           }
         }),
 
-      /** Updates fields on a card. */
+      /** Updates fields on a card. History is not patchable here; it is auto-managed. */
       updateCard: (cardId, patch) =>
         set((state) => {
           if (!state.cards[cardId]) return state
@@ -215,6 +239,7 @@ export const useKanbanStore = create<KanbanState>()(
       /**
        * Moves a card from one column to another at a specific index.
        * Used by drag-and-drop to update state after a drop.
+       * Cross-column moves append a 'moved' history event to the card.
        */
       moveCard: (cardId, fromColumnId, toColumnId, toIndex) =>
         set((state) => {
@@ -232,12 +257,21 @@ export const useKanbanStore = create<KanbanState>()(
             }
           }
 
-          // Cross-column move
+          // Cross-column move: transfer card and record in history
           const fromCardIds = state.columns[fromColumnId].cardIds.filter(
             (id) => id !== cardId
           )
           const toCardIds = [...state.columns[toColumnId].cardIds]
           toCardIds.splice(toIndex, 0, cardId)
+
+          const card = state.cards[cardId]
+          const movedEvent: HistoryEvent = {
+            id: generateId(),
+            type: 'moved',
+            fromColumnId,
+            toColumnId,
+            timestamp: new Date().toISOString(),
+          }
 
           return {
             columns: {
@@ -251,6 +285,13 @@ export const useKanbanStore = create<KanbanState>()(
                 cardIds: toCardIds,
               },
             },
+            cards: {
+              ...state.cards,
+              [cardId]: {
+                ...card,
+                history: [...card.history, movedEvent],
+              },
+            },
           }
         }),
 
@@ -262,6 +303,60 @@ export const useKanbanStore = create<KanbanState>()(
             [columnId]: { ...state.columns[columnId], cardIds },
           },
         })),
+
+      // --- Comment actions ---
+
+      /** Adds a comment to a card. */
+      addComment: (cardId, text) =>
+        set((state) => {
+          const card = state.cards[cardId]
+          if (!card) return state
+          const comment = {
+            id: generateId(),
+            text,
+            createdAt: new Date().toISOString(),
+          }
+          return {
+            cards: {
+              ...state.cards,
+              [cardId]: { ...card, comments: [...card.comments, comment] },
+            },
+          }
+        }),
+
+      /** Deletes a comment from a card. */
+      deleteComment: (cardId, commentId) =>
+        set((state) => {
+          const card = state.cards[cardId]
+          if (!card) return state
+          return {
+            cards: {
+              ...state.cards,
+              [cardId]: {
+                ...card,
+                comments: card.comments.filter((c) => c.id !== commentId),
+              },
+            },
+          }
+        }),
+
+      /** Edits the text of an existing comment on a card. */
+      editComment: (cardId, commentId, text) =>
+        set((state) => {
+          const card = state.cards[cardId]
+          if (!card) return state
+          return {
+            cards: {
+              ...state.cards,
+              [cardId]: {
+                ...card,
+                comments: card.comments.map((c) =>
+                  c.id === commentId ? { ...c, text } : c
+                ),
+              },
+            },
+          }
+        }),
     }),
     {
       name: 'kanban-v1',
@@ -269,6 +364,7 @@ export const useKanbanStore = create<KanbanState>()(
        * Validate hydrated state before merging. If the persisted value is missing
        * required top-level keys (e.g. corrupted or from an incompatible schema),
        * discard it and start fresh rather than crashing at runtime.
+       * Migrates old cards that are missing link, comments, or history fields.
        */
       merge: (persisted, current) => {
         if (
@@ -284,7 +380,20 @@ export const useKanbanStore = create<KanbanState>()(
           )
           return current
         }
-        return { ...current, ...(persisted as Partial<KanbanState>) }
+
+        const merged = { ...current, ...(persisted as Partial<KanbanState>) }
+
+        if (merged.cards && typeof merged.cards === 'object') {
+          const migratedCards: Record<string, Card> = {}
+          for (const [id, card] of Object.entries(merged.cards)) {
+            migratedCards[id] = migrateCard(
+              card as Card & Record<string, unknown>
+            )
+          }
+          merged.cards = migratedCards
+        }
+
+        return merged
       },
     }
   )

@@ -11,6 +11,9 @@ function makeCard(overrides: Partial<Card> = {}): Card {
     labelIds: [],
     dueDate: null,
     createdAt: new Date().toISOString(),
+    link: null,
+    comments: [],
+    history: [],
     ...overrides,
   }
 }
@@ -25,8 +28,18 @@ beforeEach(() => {
   ) {
     if (options?.month === 'short' && options?.day === 'numeric') {
       const months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
       ]
       return `${months[this.getMonth()]} ${this.getDate()}`
     }
