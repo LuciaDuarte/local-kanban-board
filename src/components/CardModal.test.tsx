@@ -122,4 +122,85 @@ describe('CardModal', () => {
     )
     expect(container.firstChild).toBeNull()
   })
+
+  describe('comment editing', () => {
+    it('edits a comment and saves', () => {
+      const { cardId } = setupCard()
+      useKanbanStore.getState().addComment(cardId, 'Original comment')
+      render(<CardModal cardId={cardId} onClose={() => {}} />)
+      fireEvent.click(screen.getByLabelText('Edit comment'))
+      const textarea = screen.getByDisplayValue('Original comment')
+      fireEvent.change(textarea, { target: { value: 'Edited comment' } })
+      fireEvent.click(screen.getByRole('button', { name: 'Save' }))
+      expect(useKanbanStore.getState().cards[cardId].comments[0].text).toBe(
+        'Edited comment'
+      )
+    })
+
+    it('cancels editing a comment', () => {
+      const { cardId } = setupCard()
+      useKanbanStore.getState().addComment(cardId, 'Original comment')
+      render(<CardModal cardId={cardId} onClose={() => {}} />)
+      fireEvent.click(screen.getByLabelText('Edit comment'))
+      fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+      expect(useKanbanStore.getState().cards[cardId].comments[0].text).toBe(
+        'Original comment'
+      )
+    })
+  })
+
+  describe('link normalization', () => {
+    it('auto-prepends https:// on blur when given a bare domain', () => {
+      const { cardId } = setupCard()
+      render(<CardModal cardId={cardId} onClose={() => {}} />)
+      const linkInput = document.getElementById('card-link') as HTMLInputElement
+      fireEvent.change(linkInput, { target: { value: 'example.com' } })
+      fireEvent.blur(linkInput)
+      expect(useKanbanStore.getState().cards[cardId].link).toBe(
+        'https://example.com'
+      )
+    })
+
+    it('keeps https:// URL as-is on blur', () => {
+      const { cardId } = setupCard()
+      render(<CardModal cardId={cardId} onClose={() => {}} />)
+      const linkInput = document.getElementById('card-link') as HTMLInputElement
+      fireEvent.change(linkInput, {
+        target: { value: 'https://example.com' },
+      })
+      fireEvent.blur(linkInput)
+      expect(useKanbanStore.getState().cards[cardId].link).toBe(
+        'https://example.com'
+      )
+    })
+
+    it('sets link to null on blur when input is empty', () => {
+      const { cardId } = setupCard()
+      render(<CardModal cardId={cardId} onClose={() => {}} />)
+      const linkInput = document.getElementById('card-link') as HTMLInputElement
+      fireEvent.change(linkInput, { target: { value: '' } })
+      fireEvent.blur(linkInput)
+      expect(useKanbanStore.getState().cards[cardId].link).toBeNull()
+    })
+  })
+
+  describe('expand/collapse toggle', () => {
+    it('clicking expand button adds full-width classes', () => {
+      const { cardId } = setupCard()
+      render(<CardModal cardId={cardId} onClose={() => {}} />)
+      fireEvent.click(screen.getByLabelText('Expand'))
+      const dialog = screen.getByRole('dialog')
+      expect(dialog.classList.contains('w-full')).toBe(true)
+      expect(dialog.classList.contains('h-full')).toBe(true)
+    })
+
+    it('clicking collapse button restores modal classes', () => {
+      const { cardId } = setupCard()
+      render(<CardModal cardId={cardId} onClose={() => {}} />)
+      fireEvent.click(screen.getByLabelText('Expand'))
+      fireEvent.click(screen.getByLabelText('Collapse'))
+      const dialog = screen.getByRole('dialog')
+      expect(dialog.classList.contains('max-w-lg')).toBe(true)
+    })
+  })
 })
