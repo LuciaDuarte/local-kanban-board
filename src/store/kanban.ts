@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware'
 import type { KanbanState, Board, Column, Card, HistoryEvent } from './types'
 import { generateId } from '../utils/id'
 
+const SCHEMA_VERSION = 1
+
 /**
  * Migrates a persisted card (which may be missing fields added later)
  * into a complete Card object with safe defaults.
@@ -36,6 +38,7 @@ export const useKanbanStore = create<KanbanState>()(
       columns: {},
       cards: {},
       activeBoardId: null,
+      schemaVersion: SCHEMA_VERSION,
 
       // --- Board actions ---
 
@@ -383,15 +386,24 @@ export const useKanbanStore = create<KanbanState>()(
 
         const merged = { ...current, ...(persisted as Partial<KanbanState>) }
 
-        if (merged.cards && typeof merged.cards === 'object') {
-          const migratedCards: Record<string, Card> = {}
-          for (const [id, card] of Object.entries(merged.cards)) {
-            migratedCards[id] = migrateCard(
-              card as Card & Record<string, unknown>
-            )
+        const persistedVersion = (persisted as Record<string, unknown>)
+          .schemaVersion
+        if (
+          typeof persistedVersion !== 'number' ||
+          persistedVersion < SCHEMA_VERSION
+        ) {
+          if (merged.cards && typeof merged.cards === 'object') {
+            const migratedCards: Record<string, Card> = {}
+            for (const [id, card] of Object.entries(merged.cards)) {
+              migratedCards[id] = migrateCard(
+                card as Card & Record<string, unknown>
+              )
+            }
+            merged.cards = migratedCards
           }
-          merged.cards = migratedCards
         }
+
+        merged.schemaVersion = SCHEMA_VERSION
 
         return merged
       },

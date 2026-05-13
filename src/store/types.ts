@@ -61,6 +61,8 @@ export type KanbanState = {
   cards: Record<string, Card>
   /** The currently active board ID, or null if none selected. */
   activeBoardId: string | null
+  /** Schema version for persistence migration tracking. */
+  schemaVersion: number
 
   // Board actions
   createBoard: (title: string) => void
