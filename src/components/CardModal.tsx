@@ -1,11 +1,4 @@
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useKanbanStore } from '../store/kanban'
 import { LABEL_COLORS } from '../constants/labels'
 
@@ -67,17 +60,9 @@ export function CardModal({ cardId, onClose }: Props) {
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
   const [editingCommentText, setEditingCommentText] = useState('')
   const commentsEndRef = useRef<HTMLDivElement>(null)
-  const prevCommentCountRef = useRef(card?.comments.length ?? 0)
-
-  useLayoutEffect(() => {
-    if (card && card.comments.length > prevCommentCountRef.current) {
-      commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }
-    prevCommentCountRef.current = card?.comments.length ?? 0
-  }, [card?.comments.length, card])
 
   const getColumnName = useCallback(
-    (colId: string) => columns[colId]?.title ?? 'Unknown',
+    (colId: string) => columns[colId]?.title ?? '(deleted column)',
     [columns]
   )
 
@@ -122,7 +107,7 @@ export function CardModal({ cardId, onClose }: Props) {
     }
     el.addEventListener('keydown', trap)
     return () => el.removeEventListener('keydown', trap)
-  }, [])
+  }, [isExpanded])
 
   if (!card) return null
 
@@ -165,6 +150,9 @@ export function CardModal({ cardId, onClose }: Props) {
     if (!trimmed) return
     addComment(cardId, trimmed)
     setCommentText('')
+    requestAnimationFrame(() => {
+      commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    })
   }
 
   function handleStartEditComment(commentId: string, currentText: string) {
