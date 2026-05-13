@@ -52,7 +52,9 @@ src/
     BoardView.tsx   Board with DnD context
     SortableColumn.tsx  Draggable column
     SortableCard.tsx    Draggable card
-    CardModal.tsx   Card detail modal (expandable, with comments and activity)
+    CardModal.tsx   Card detail modal (expandable)
+    CardComments.tsx  Comment list and add/edit UI
+    CardActivity.tsx  Activity timeline for card history events
     CardModal.test.tsx  CardModal tests
     KanbanCard.tsx  Card display (used in DragOverlay)
     CardContent.tsx Card content display
@@ -68,7 +70,7 @@ src/
   utils/
     id.ts           ID generation utility
     id.test.ts      ID utility tests
-    date.ts         Date formatting utility
+    date.ts         Date formatting and history timestamp utility
     date.test.ts    Date utility tests
   constants/
     labels.ts       Label definitions
