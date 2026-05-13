@@ -44,7 +44,7 @@ export function CardModal({ cardId, onClose }: Props) {
   const [isExpanded, setIsExpanded] = useState(false)
 
   const getColumnName = useCallback(
-    (colId: string) => columns[colId]?.title ?? 'Unknown',
+    (colId: string) => columns[colId]?.title ?? '(deleted column)',
     [columns]
   )
 
@@ -89,7 +89,7 @@ export function CardModal({ cardId, onClose }: Props) {
     }
     el.addEventListener('keydown', trap)
     return () => el.removeEventListener('keydown', trap)
-  }, [])
+  }, [isExpanded])
 
   if (!card) return null
 
