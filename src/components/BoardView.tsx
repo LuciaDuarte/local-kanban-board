@@ -42,6 +42,17 @@ export function BoardView({ boardId, onCardClick, now }: Props) {
   } = useKanbanStore()
   const board = boards[boardId]
 
+  const cardIdToColumnId = board.columnIds.reduce<Record<string, string>>(
+    (map, colId) => {
+      const cardIds = columns[colId]?.cardIds
+      if (cardIds) {
+        for (const cid of cardIds) map[cid] = colId
+      }
+      return map
+    },
+    {}
+  )
+
   const [isAddingColumn, setIsAddingColumn] = useState(false)
   const [newColumnTitle, setNewColumnTitle] = useState('')
   const [activeCardId, setActiveCardId] = useState<string | null>(null)
@@ -78,16 +89,12 @@ export function BoardView({ boardId, onCardClick, now }: Props) {
     // Only handle card-over-column or card-over-card
     if (!allCardIds.includes(activeId)) return
 
-    const activeColumnId = Object.values(columns).find((col) =>
-      col.cardIds.includes(activeId)
-    )?.id
+    const activeColumnId = cardIdToColumnId[activeId]
     if (!activeColumnId) return
 
-    // Determine target column: either the column directly, or the column of the card hovered over
     const targetColumnId = board.columnIds.includes(overId)
       ? overId
-      : (Object.values(columns).find((col) => col.cardIds.includes(overId))
-          ?.id ?? null)
+      : (cardIdToColumnId[overId] ?? null)
 
     if (!targetColumnId || activeColumnId === targetColumnId) return
 
@@ -119,12 +126,11 @@ export function BoardView({ boardId, onCardClick, now }: Props) {
     }
 
     // Card reorder within same column
-    const activeCol = Object.values(columns).find((col) =>
-      col.cardIds.includes(activeId)
-    )
-    const overCol = Object.values(columns).find(
-      (col) => col.cardIds.includes(overId) || col.id === overId
-    )
+    const activeColumnId = cardIdToColumnId[activeId]
+    const activeCol = activeColumnId ? columns[activeColumnId] : undefined
+    const overCol = board.columnIds.includes(overId)
+      ? columns[overId]
+      : columns[cardIdToColumnId[overId]]
 
     if (!activeCol || !overCol) return
 

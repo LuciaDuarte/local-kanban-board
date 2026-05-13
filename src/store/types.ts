@@ -9,12 +9,15 @@ export type Comment = {
 export type HistoryEvent =
   | {
       id: string
+      /** 'created' when the card was created, 'moved' when it changed columns. */
       type: 'created'
+      /** The column the card was created in. Only set for 'created' events. */
       columnId: string
       timestamp: string
     }
   | {
       id: string
+      /** 'created' when the card was created, 'moved' when it changed columns. */
       type: 'moved'
       fromColumnId: string
       toColumnId: string

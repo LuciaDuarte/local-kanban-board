@@ -26,3 +26,14 @@ export function formatDueDate(dueDate: string): string {
     day: 'numeric',
   })
 }
+
+/** Formats an ISO timestamp for display in the activity timeline. */
+export function formatHistoryTimestamp(ts: string): string {
+  return new Date(ts).toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
