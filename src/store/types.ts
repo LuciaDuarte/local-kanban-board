@@ -1,3 +1,26 @@
+/** A user comment attached to a card. */
+export type Comment = {
+  id: string
+  text: string
+  createdAt: string
+}
+
+/** A record of a card's creation or move between columns. */
+export type HistoryEvent =
+  | {
+      id: string
+      type: 'created'
+      columnId: string
+      timestamp: string
+    }
+  | {
+      id: string
+      type: 'moved'
+      fromColumnId: string
+      toColumnId: string
+      timestamp: string
+    }
+
 /** A single kanban card. */
 export type Card = {
   id: string
@@ -6,6 +29,12 @@ export type Card = {
   labelIds: string[]
   dueDate: string | null
   createdAt: string
+  /** Optional external link attached to the card. */
+  link: string | null
+  /** Ordered list of user comments on this card. */
+  comments: Comment[]
+  /** Ordered list of activity events (creation + column moves). */
+  history: HistoryEvent[]
 }
 
 /** A column within a board (e.g. "To Do", "In Progress"). */
@@ -47,9 +76,10 @@ export type KanbanState = {
 
   // Card actions
   createCard: (columnId: string, title: string) => void
+  /** Updates card fields. 'history' cannot be patched directly — it is managed by moveCard. */
   updateCard: (
     cardId: string,
-    patch: Partial<Omit<Card, 'id' | 'createdAt'>>
+    patch: Partial<Omit<Card, 'id' | 'createdAt' | 'history'>>
   ) => void
   deleteCard: (columnId: string, cardId: string) => void
   moveCard: (
@@ -59,4 +89,9 @@ export type KanbanState = {
     toIndex: number
   ) => void
   reorderCards: (columnId: string, cardIds: string[]) => void
+
+  // Comment actions
+  addComment: (cardId: string, text: string) => void
+  deleteComment: (cardId: string, commentId: string) => void
+  editComment: (cardId: string, commentId: string, text: string) => void
 }

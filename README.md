@@ -6,7 +6,7 @@ A minimal, fast kanban board that runs entirely in the browser. No account, no b
 
 - Multiple boards managed from a persistent sidebar (collapsible)
 - Columns with inline rename and delete
-- Cards with title, description, labels, and due date
+- Cards with title, description, link, labels, due date, comments, and activity history
 - Drag and drop: reorder cards within a column, move cards between columns, reorder columns
 - Dark mode (persists across sessions, respects system preference on first load)
 - All data stored in `localStorage` — survives page refreshes
@@ -52,7 +52,7 @@ src/
     BoardView.tsx   Board with DnD context
     SortableColumn.tsx  Draggable column
     SortableCard.tsx    Draggable card
-    CardModal.tsx   Card detail modal
+    CardModal.tsx   Card detail modal (expandable, with comments and activity)
     CardModal.test.tsx  CardModal tests
     KanbanCard.tsx  Card display (used in DragOverlay)
     CardContent.tsx Card content display
@@ -60,7 +60,7 @@ src/
     InlineEdit.tsx  Click-to-edit text field
   store/
     kanban.ts       Zustand store + all actions
-    types.ts        TypeScript types (Board, Column, Card, Label)
+    types.ts        TypeScript types (Board, Column, Card, Comment, HistoryEvent, Label)
     kanban.test.ts  Store unit tests
   hooks/
     useDarkMode.ts  Dark mode toggle hook
@@ -91,7 +91,7 @@ Dark mode is managed by `useDarkMode`, which toggles the `dark` class on `<html>
 
 ## Data persistence
 
-All state is stored in `localStorage` under the key `kanban-v1`. If the state schema changes in a breaking way, the key should be incremented to `kanban-v2` and a migration added to the Zustand `persist` config. See [ADR 001](docs/adr/001-zustand-persist.md).
+All state is stored in `localStorage` under the key `kanban-v1`. When new fields are added to the data model (e.g. `link`, `comments`, `history`), a `migrateCard` function in the Zustand `merge` config fills in safe defaults for any missing fields — this allows the storage key to stay the same without losing existing user data. If the stored state shape changes in a **breaking** way (fields renamed, nested structure changed beyond what `migrateCard` can handle), the key should be incremented to `kanban-v2` and a migration added. See [ADR 001](docs/adr/001-zustand-persist.md).
 
 ## Testing
 

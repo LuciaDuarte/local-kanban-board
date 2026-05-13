@@ -21,7 +21,7 @@ export function CardContent({ card, now }: Props) {
         {card.title}
       </p>
 
-      {(card.dueDate || card.labelIds.length > 0) && (
+      {(card.dueDate || card.labelIds.length > 0 || card.link) && (
         <div className="flex items-center gap-2 mt-2 flex-wrap">
           {card.dueDate && (
             <span
@@ -34,6 +34,26 @@ export function CardContent({ card, now }: Props) {
               }`}
             >
               {formatDueDate(card.dueDate)}
+            </span>
+          )}
+          {card.link && (
+            <span
+              className="text-gray-400 dark:text-gray-500"
+              title={card.link}
+            >
+              <svg
+                className="w-3.5 h-3.5"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path
+                  d="M6 2H4a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-2M10 2h4v4M14 2L8 8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </span>
           )}
           {card.labelIds.length > 0 && (
